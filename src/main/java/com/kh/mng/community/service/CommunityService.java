@@ -1,9 +1,6 @@
 package com.kh.mng.community.service;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.mng.common.model.vo.Attachment;
 import com.kh.mng.common.model.vo.PageInfo;
@@ -15,7 +12,9 @@ import com.kh.mng.community.model.dto.DeleteBoardAttachmentInfo;
 import com.kh.mng.community.model.dto.ForIsLike;
 import com.kh.mng.community.model.dto.ReplyInfo;
 import com.kh.mng.community.model.dto.ShorstInfo;
+import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
+import com.kh.mng.community.model.dto.ShortsPreList;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
@@ -91,5 +90,10 @@ public interface CommunityService {
 
 	int deleteBoardAttachment(DeleteBoardAttachmentInfo deleteInfo);
 
+	// 쇼츠 페이지 전체 로드
+	ArrayList<ShortsPreList> selectShortsContentList();
+	
+	// 쇼츠 컨텐츠 하나의 정보 셀렉
+	ShortsContent selectShortsContent(int shortsNo);
 
 }
