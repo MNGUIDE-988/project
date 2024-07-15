@@ -236,3 +236,4 @@ function loadImg(inputFile) {
         companyImg.src = "resources/img/myPage/+.png";
     }
 }
+

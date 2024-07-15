@@ -59,7 +59,7 @@
 	 		<mapping path="/enroll.short"/>
 	 		<mapping path="/enrollBoard.bo"/>
 	 		<mapping path="/detailView.bo"/>
-	 		<mapping path="/shortsView.bo"/>
+	 		<mapping path="/shortsContent.sh"/>
 	 		<beans:bean class="com.kh.mng.common.intercepter.MemberIntercepter" id="MemberIntercepter"/>
 	 	</interceptor>
 	</interceptors>
