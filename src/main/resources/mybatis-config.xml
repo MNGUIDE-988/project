@@ -59,6 +59,10 @@
 		<typeAlias type="com.kh.mng.location.model.vo.MyPageReview" alias="MyPageReview"/>
 		<typeAlias type="com.kh.mng.bosspage.model.vo.LocationPicture" alias="LocationPicture"/>
 		<typeAlias type="com.kh.mng.common.chat.model.vo.ChatLocationInfo" alias="ChatLocationInfo"/>
+		
+		<typeAlias type="com.kh.mng.community.model.dto.ShortsPreList" alias="ShortsPreList"/>
+		<typeAlias type="com.kh.mng.community.model.dto.ShortsContent" alias="ShortsContent"/>
+		<typeAlias type="com.kh.mng.common.model.vo.Video" alias="Video"/>
  	</typeAliases> 
  	
  	

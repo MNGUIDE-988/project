@@ -14,10 +14,40 @@
 	  	 <result column="USER_NICKNAME" property="userNo"></result>
 	  </resultMap>
 	  
+	  
+	  
+	  
+	  
+	  
+	  
 	   <resultMap type="Attachment" id="shortsAttachment">
 	   		<result column="ORIGIN_NAME" property="originName"></result>
 	   		<result column="CHANGE_NAME" property="changeName"></result>
 	   		<result column="FILE_PATH" property="filePath"></result>
+	   </resultMap>
+	   
+	   <resultMap type="ShortsPreList" id="shortsPreList">
+	   		<result column="SHORTS_NO" property="shortsNo"></result>
+	   </resultMap>
+	   
+	   <resultMap type="ShortsContent" id="shortsContent">
+	   		 <result column="SHORTS_NO" property="shortsNo"></result>
+		  	 <result column="SHORTS_CONTENT" property="shortsContent"></result>
+		  	 <result column="COUNT" property="count"></result>
+		  	 <result column="ENROLL_DATE" property="enrollDate"></result>
+		  	 <result column="STATUS" property="status"></result>
+		  	 <result column="USER_NO" property="userNo"></result>
+		  	 <result column="USER_NICKNAME" property="userNickname"></result>
+		  	 <result column="LIKE_COUNT" property="likeCount"></result>
+		  	 <result column="REPLY_COUNT" property="replyCount"></result>
+	   </resultMap>
+	   
+	   <resultMap type="Video" id="video">
+	   		 <result column="VIDEO_NO" property="videoNo"></result>
+		  	 <result column="ORIGIN_NAME" property="originName"></result>
+		  	 <result column="CHANGE_NAME" property="changeName"></result>
+		  	 <result column="FILE_PATH" property="filePath"></result>
+		  	 <result column="SHORTS_NO" property="shortsNo"></result>
 	   </resultMap>
   
   	<select id="communityShortsSelectList" resultMap="selectShorts">
@@ -128,7 +158,66 @@
    			
    
    	 </insert>
-   	   
+   	 
+   	 
+   	 
+   	 
+   	 <select id="selectShortsContentList" resultMap="shortsPreList">
+   	 	SELECT SHORTS_NO
+   	 	FROM (SELECT SHORTS_NO
+	   	 	  FROM SHORTS
+	   	 	  ORDER BY ENROLL_DATE DESC)
+   	 	LIMIT 20  
+   	 </select>
+   	 
+   	 <select id="selectShortsThumb" resultMap="shortsAttachment">
+   	 	SELECT CHANGE_NAME,
+   	 		   FILE_PATH
+   	 	FROM PICTURE
+   	 	WHERE FILE_LEVEL = 1
+   	 	AND SHORTS_NO = #{shortsNo}
+   	 	LIMIT 1
+   	 </select>
+   	 
+   	 <select id="selectShortsContent" resultMap="shortsContent">
+   	 	SELECT S.SHORTS_NO,
+   	 		   SHORTS_CONTENT,
+   	 		   COUNT,
+   	 		   S.ENROLL_DATE,
+   	 		   S.USER_NO,
+   	 		   USER_NICKNAME,
+			   LC.LIKE_COUNT,
+			   RC.REPLY_COUNT
+   	 	FROM SHORTS S
+   	 	
+   	 	JOIN MEMBER U ON S.USER_NO = U.USER_NO
+   	 	
+		LEFT JOIN (SELECT COUNT(*) AS LIKE_COUNT,
+							SHORTS_NO
+					FROM GOOD
+					GROUP BY SHORTS_NO
+					HAVING SHORTS_NO = #{shortsNo}) LC
+		ON LC.SHORTS_NO = S.SHORTS_NO
+			
+		LEFT JOIN (SELECT COUNT(*) AS REPLY_COUNT,
+							SHORTS_NO
+					FROM REPLY
+					GROUP BY SHORTS_NO
+					HAVING SHORTS_NO = #{shortsNo}) RC
+		ON RC.SHORTS_NO = S.SHORTS_NO
+	
+   	 	WHERE S.SHORTS_NO = #{shortsNo}
+   	 	AND S.STATUS = true
+   	 </select>
+   	 
+   	 <select id="selectVideo" resultMap="video">
+   	 	SELECT VIDEO_NO,
+   	 		   ORIGIN_NAME,
+   	 		   CHANGE_NAME,
+   	 		   FILE_PATH
+   	 	FROM VIDEO
+   	 	WHERE SHORTS_NO = #{shortsNo}
+   	 </select>
    	
   	
    

@@ -1,8 +1,6 @@
 package com.kh.mng.community.model.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -10,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.mng.common.model.vo.Attachment;
 import com.kh.mng.common.model.vo.PageInfo;
+import com.kh.mng.common.model.vo.ProfileImg;
+import com.kh.mng.common.model.vo.Video;
 import com.kh.mng.community.model.dto.BoardEnroll;
 import com.kh.mng.community.model.dto.BoardFileInfo;
 import com.kh.mng.community.model.dto.BoardInfo;
@@ -17,14 +17,15 @@ import com.kh.mng.community.model.dto.DeleteBoardAttachmentInfo;
 import com.kh.mng.community.model.dto.ForIsLike;
 import com.kh.mng.community.model.dto.ReplyInfo;
 import com.kh.mng.community.model.dto.ShorstInfo;
+import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
+import com.kh.mng.community.model.dto.ShortsPreList;
 import com.kh.mng.community.model.dto.ShortsReplyDTO;
 import com.kh.mng.community.model.vo.BoardCategory;
-import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.BoardReplyReply;
+import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
-import com.kh.mng.community.model.vo.ShortsInfo;
 import com.kh.mng.community.model.vo.ShortsReply;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
 
@@ -279,6 +280,32 @@ public class CommunityDao {
 //		List<ShortsReply> replyList = sqlSession.selectList("shortsMapper.loadReply", shortsNum);
 //	    return new ArrayList<>(replyList);
 //	}
+	
+	
+	
+	// 쇼츠 페이지
+	public ArrayList<ShortsPreList> selectShortsContentList(SqlSessionTemplate sqlSession){
+		return (ArrayList)sqlSession.selectList("communityShortsMapper.selectShortsContentList");
+	}
+	
+	// 쇼츠 썸네일 조회
+	public Attachment selectShortsThumb(SqlSessionTemplate sqlSession, int shortsNo) {
+		return sqlSession.selectOne("communityShortsMapper.selectShortsThumb", shortsNo);
+	}
+	
+	// 쇼츠 컨텐츠 정보 조회
+	public ShortsContent selectShortsContent(SqlSessionTemplate sqlSession, int shortsNo) {
+		return sqlSession.selectOne("communityShortsMapper.selectShortsContent", shortsNo);
+	}
+	
+	// 쇼츠 영상 파일 조회
+	public Video selectVideo(SqlSessionTemplate sqlSession, int shortsNo) {
+		return sqlSession.selectOne("communityShortsMapper.selectVideo", shortsNo);
+	}
 
+	// 쇼츠 유저 프로필 사진 조회
+	public ProfileImg selectProfile(SqlSessionTemplate sqlSession, int userNo) {
+		return sqlSession.selectOne("imgMapper.getProfileImg", userNo);
+	}
 
 }

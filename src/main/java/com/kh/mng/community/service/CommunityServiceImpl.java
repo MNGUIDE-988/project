@@ -1,18 +1,15 @@
 package com.kh.mng.community.service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.mng.common.model.vo.Attachment;
 import com.kh.mng.common.model.vo.PageInfo;
-import com.kh.mng.common.model.vo.Pagination;
 import com.kh.mng.community.model.dao.CommunityDao;
 import com.kh.mng.community.model.dto.BoardEnroll;
 import com.kh.mng.community.model.dto.BoardFileInfo;
@@ -22,12 +19,14 @@ import com.kh.mng.community.model.dto.DeleteBoardAttachmentInfo;
 import com.kh.mng.community.model.dto.ForIsLike;
 import com.kh.mng.community.model.dto.ReplyInfo;
 import com.kh.mng.community.model.dto.ShorstInfo;
+import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
+import com.kh.mng.community.model.dto.ShortsPreList;
 import com.kh.mng.community.model.dto.ShortsReplyDTO;
 import com.kh.mng.community.model.vo.BoardCategory;
-import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.BoardReplyReply;
+import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
 import com.kh.mng.community.model.vo.ShortsReply;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
@@ -557,6 +556,32 @@ public class CommunityServiceImpl implements CommunityService{
 		
 		
 		return result1 * result2;
+	}
+
+
+	// 쇼츠 페이지
+	
+	@Override
+	public ArrayList<ShortsPreList> selectShortsContentList() {
+		ArrayList<ShortsPreList> list = communityDao.selectShortsContentList(sqlSession);
+		
+		for (ShortsPreList s : list) {
+			s.setShortsThumb(communityDao.selectShortsThumb(sqlSession, s.getShortsNo()));
+		}
+		
+		return list;
+	}
+
+
+	@Override
+	public ShortsContent selectShortsContent(int shortsNo) {
+		ShortsContent shorts = communityDao.selectShortsContent(sqlSession, shortsNo);
+//		Attachment userProfile = communityDao.selectUserProfile(sqlSession, shorts.getUserNo());
+//		log.info("{}", shorts.getUserNo());
+//		log.info(userProfile.toString());
+		shorts.setUserProfile(communityDao.selectProfile(sqlSession, shorts.getUserNo()));
+		shorts.setVideo(communityDao.selectVideo(sqlSession, shorts.getShortsNo()));
+		return shorts;
 	}
 
 

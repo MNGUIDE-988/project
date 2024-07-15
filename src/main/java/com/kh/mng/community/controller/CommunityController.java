@@ -35,8 +35,9 @@ import com.kh.mng.community.model.dto.DeleteBoardAttachmentInfo;
 import com.kh.mng.community.model.dto.ForIsLike;
 import com.kh.mng.community.model.dto.ReplyInfo;
 import com.kh.mng.community.model.dto.ShorstInfo;
-import com.kh.mng.community.model.dto.ShortPage;
+import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
+import com.kh.mng.community.model.dto.ShortsPreList;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
@@ -168,22 +169,22 @@ public class CommunityController {
 		return new Gson().toJson(pages);
 	}
 	
-	
-	//쇼츠 페이징 처리 비동기
-	@ResponseBody
-	@GetMapping(value = "shorts", produces = "application/json; charset=utf-8")
-	public String selecShorts(int shortsPageNo) {
-		int shortsCount = communityService.selectShortsCount();
-
-		PageInfo shortsPi = Pagination.getPageInfo(shortsCount, shortsPageNo, 10, 10);
-		ArrayList<Shorts> shorts = communityService.selectShortsList(shortsPi);
-		ShortPage pages = new ShortPage();
-		pages.setPage(shortsPi);
-		pages.setShorts(shorts);
-
-		return new Gson().toJson(pages);
-
-	}
+//	
+//	//쇼츠 페이징 처리 비동기
+//	@ResponseBody
+//	@GetMapping(value = "shorts", produces = "application/json; charset=utf-8")
+//	public String selecShorts(int shortsPageNo) {
+//		int shortsCount = communityService.selectShortsCount();
+//
+//		PageInfo shortsPi = Pagination.getPageInfo(shortsCount, shortsPageNo, 10, 10);
+//		ArrayList<Shorts> shorts = communityService.selectShortsList(shortsPi);
+//		ShortPage pages = new ShortPage();
+//		pages.setPage(shortsPi);
+//		pages.setShorts(shorts);
+//
+//		return new Gson().toJson(pages);
+//
+//	}
 	
 	@GetMapping(value="enrollshort.view")
 	public String enrollShortsView() {
@@ -712,7 +713,38 @@ public class CommunityController {
 	
 	// 쇼츠 페이지
 	@GetMapping("shortsContent.sh")
-	public String shortsContent() {
+	public String shortsContent(Model model) {
+		ArrayList<ShortsPreList> list = communityService.selectShortsContentList();
+		
+		model.addAttribute("list", list);
+		model.addAttribute("listCount", list.size());
 		return "community/shortsContent";
 	}
+	
+	// 쇼츠 정보 ajax
+	@ResponseBody
+	@GetMapping(value="selectShortsContent.sh", produces="application/json; charset=utf-8")
+	public String ajaxShortsContent(String shortsNo) {
+		int sno = Integer.parseInt(shortsNo);
+		ShortsContent shorts = communityService.selectShortsContent(sno);
+		
+		return new Gson().toJson(shorts);
+	}
+	
+	// 특정 쇼츠 컨텐츠 클릭
+	@GetMapping("userShortsContent.sh")
+	public String userShortsContent() {
+		// 유저의 쇼츠 컨텐츠 번호 목록 + 
+		
+		return "community/shortsContent";
+	}
+	
+	
+	// 쇼츠 컨텐츠 리스트 ajax
+//	@ResponseBody
+//	@GetMapping(value="selectShortsContentList.sh", produces="application/json; charset=utf-8")
+//	public String ajaxSelectShortsContentList() {
+//		ArrayList<ShortsPreList> list = communityService.selectShortsContentList();
+//		return new Gson().toJson(list);
+//	}
 }
