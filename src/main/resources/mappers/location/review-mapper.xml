@@ -250,7 +250,8 @@
     	UPDATE REVIEW SET
     		USER_NO = #{userNo},
     		MODIFY_DATE = DEFAULT,
-    		REVIEW_CONTENT = #{reviewContent}
+    		REVIEW_CONTENT = #{reviewContent},
+    		REVIEW_STAR = #{reviewStar}
     		WHERE REVIEW_NO = #{reviewNo}
     </update>
     
