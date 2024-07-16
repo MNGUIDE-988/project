@@ -14,7 +14,7 @@
     <script src="resources/js/community/shorts/shortsContent.js"></script>
     <script src="resources/js/community/ajax/shortAjax.js"></script>
 </head>
-<body onload="init('${contextPath}')">
+<body onload="init('${contextPath}', '${list[0].shortsNo}')">
 	<%@ include file="../common/header.jsp"%>
 
     <div class="main shorts-main">

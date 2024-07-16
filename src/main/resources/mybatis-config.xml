@@ -34,7 +34,7 @@
  			<typeAlias type="com.kh.mng.community.model.vo.BoardReplyReply" alias="BoardReplyReply"/>
  		<typeAlias type="com.kh.mng.picture.model.vo.Picture" alias="Picture"/>
  		<typeAlias type="com.kh.mng.community.model.vo.TotalShortsInfo" alias="TotalShortsInfo"/>
- 		<typeAlias type="com.kh.mng.community.model.vo.ShortsReply" alias="ShortsReply"/>
+ 		<typeAlias type="com.kh.mng.community.model.vo.ShortsReplyVo" alias="ShortsReplyVo"/>
  		<typeAlias type="com.kh.mng.community.model.vo.CommunityBoard" alias="CommunityBoard"/>
 
 		<typeAlias type="com.kh.mng.community.model.vo.BoardCategory" alias="BoardCategory"/>
@@ -62,6 +62,7 @@
 		
 		<typeAlias type="com.kh.mng.community.model.dto.ShortsPreList" alias="ShortsPreList"/>
 		<typeAlias type="com.kh.mng.community.model.dto.ShortsContent" alias="ShortsContent"/>
+		<typeAlias type="com.kh.mng.community.model.dto.ShortsReply" alias="ShortsReply"/>
 		<typeAlias type="com.kh.mng.common.model.vo.Video" alias="Video"/>
  	</typeAliases> 
  	

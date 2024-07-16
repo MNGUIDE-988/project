@@ -38,11 +38,12 @@ import com.kh.mng.community.model.dto.ShorstInfo;
 import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
 import com.kh.mng.community.model.dto.ShortsPreList;
+import com.kh.mng.community.model.dto.ShortsReply;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
-import com.kh.mng.community.model.vo.ShortsReply;
+import com.kh.mng.community.model.vo.ShortsReplyVo;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
 import com.kh.mng.community.service.CommunityService;
 import com.kh.mng.member.model.vo.Member;
@@ -640,7 +641,7 @@ public class CommunityController {
 		
 		log.info("shortsNum:" + shortsNo);
 		
-		ShortsReply shortsReply = communityService.addComment(userNo, shortsNo, comment);
+		ShortsReplyVo shortsReply = communityService.addComment(userNo, shortsNo, comment);
 		return new Gson().toJson(shortsReply);
 	}
 	
@@ -649,7 +650,7 @@ public class CommunityController {
 	public String loadReply(@RequestParam(value="num") int videoId){
 		int shortsNum = communityService.getShortsNum(videoId);
 		
-		ArrayList<ShortsReply> replyList = communityService.loadReply(shortsNum);
+		ArrayList<ShortsReplyVo> replyList = communityService.loadReply(shortsNum);
 		return new Gson().toJson(replyList);
 	}
 	
@@ -721,7 +722,7 @@ public class CommunityController {
 		return "community/shortsContent";
 	}
 	
-	// 쇼츠 정보 ajax
+	// 쇼츠 컨텐츠 하나 ajax
 	@ResponseBody
 	@GetMapping(value="selectShortsContent.sh", produces="application/json; charset=utf-8")
 	public String ajaxShortsContent(String shortsNo) {
@@ -729,6 +730,17 @@ public class CommunityController {
 		ShortsContent shorts = communityService.selectShortsContent(sno);
 		
 		return new Gson().toJson(shorts);
+	}
+	
+	// 쇼츠 댓글 ajax
+	@ResponseBody
+	@GetMapping(value="selectShortsReplyList.sh", produces="application/json; charset=utf-8")
+	public String ajaxShortsReplyList(String shortsNo) {
+		int sno = Integer.parseInt(shortsNo);
+		ArrayList<ShortsReply> reply = communityService.selectShortsReplyList(sno);
+		log.info("{}", reply);
+		return new Gson().toJson(reply);
+//		return new Gson().toJson(null);
 	}
 	
 	// 특정 쇼츠 컨텐츠 클릭

@@ -49,6 +49,16 @@
 		  	 <result column="FILE_PATH" property="filePath"></result>
 		  	 <result column="SHORTS_NO" property="shortsNo"></result>
 	   </resultMap>
+	   
+	   <resultMap type="ShortsReply" id="shortsReply">
+	   		 <result column="REPLY_NO" property="replyNo"></result>
+		  	 <result column="REPLY_CONTENT" property="replyContent"></result>
+		  	 <result column="CREATE_DATE" property="createDate"></result>
+		  	 <result column="USER_NO" property="userNo"></result>
+		  	 <result column="USER_NICKNAME" property="userNickname"></result>
+		  	 <result column="SHORTS_NO" property="shortsNo"></result>
+		  	 <result column="REPLY_COUNT" property="replyCount"></result>
+	   </resultMap>
   
   	<select id="communityShortsSelectList" resultMap="selectShorts">
   	      SELECT 
@@ -218,7 +228,35 @@
    	 	FROM VIDEO
    	 	WHERE SHORTS_NO = #{shortsNo}
    	 </select>
-   	
+   	 
+   	 
+   	 <select id="selectShortsReplyList" resultMap="shortsReply">
+   		SELECT REPLY_NO,
+   			   REPLY_CONTENT,
+   			   R.CREATE_DATE,
+   			   R.USER_NO,
+   			   USER_NICKNAME
+   		FROM REPLY R
+   		JOIN MEMBER M ON R.USER_NO = M.USER_NO
+   		WHERE R.SHORTS_NO = #{shortsNo}
+   		AND REPLY_RE_NO IS NULL
+   		AND R.STATUS = true
+  	</select>
+  	
+  	<select id="selectShortsReReplyList" resultMap="shortsReply">
+  		SELECT REPLY_NO,
+   			   REPLY_CONTENT,
+   			   R.CREATE_DATE,
+   			   R.USER_NO,
+   			   USER_NICKNAME
+   		FROM REPLY R
+   		JOIN MEMBER M ON R.USER_NO = M.USER_NO
+   		WHERE REPLY_RE_NO = #{replyNo}
+   		AND R.STATUS = true
+  	</select>
+  	
+  	
+  	
   	
    
    

@@ -1,7 +1,7 @@
 let contextPath;
 
-function init(path){
+function init(path, shortsNo){
     contextPath = path;
-    // selectShortsList("", drawShortsPage);
+    selectShortsContent({shortsNo : shortsNo}, drawShortsContent);
 }
 
