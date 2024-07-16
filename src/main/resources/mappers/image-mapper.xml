@@ -125,6 +125,7 @@
 	
 	<select id="getReviewImg" resultMap="imgResult">
 		SELECT ORIGIN_NAME,
+		PIC_NO,
 		CHANGE_NAME,
 		FILE_PATH
 		FROM PICTURE
@@ -142,5 +143,21 @@
 		ORDER BY PIC_NO DESC
 		LIMIT 3
 	</select>
-
+	
+	<select id="getReviewImgOne" resultMap="imgResult">
+		SELECT ORIGIN_NAME,
+		PIC_NO,
+		CHANGE_NAME,
+		FILE_PATH
+		FROM PICTURE
+		WHERE PIC_NO = #{picNo}
+	</select>
+	
+	<update id="updateReviewImg" parameterType="ProfileImg">
+		UPDATE PICTURE
+		SET ORIGIN_NAME = #{originName},
+		CHANGE_NAME = #{changeName},
+		FILE_PATH = #{filePath}
+		WHERE PIC_NO = #{picNo}
+	</update>
 </mapper>

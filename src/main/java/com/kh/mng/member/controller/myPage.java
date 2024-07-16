@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.mng.bosspage.model.vo.BossLocation;
 import com.kh.mng.common.model.vo.ProfileImg;
-import com.kh.mng.community.model.vo.Board;
 import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
 import com.kh.mng.location.model.vo.MyPageEnter;
@@ -82,6 +81,7 @@ public class myPage {
     @PostMapping("/updateReview.mp")
     public String updateReview(@RequestParam int reviewNo,
                                @RequestParam String reviewContent,
+                               @RequestParam int reviewStarCount,
                                HttpSession session) {
         // 세션에서 로그인 사용자 정보 가져오기
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -98,6 +98,7 @@ public class myPage {
         myReview.setUserNo(userNo);
         myReview.setReviewNo(reviewNo);
         myReview.setReviewContent(reviewContent);
+        myReview.setReviewStar(reviewStarCount);
 
         // 리뷰 수정 서비스 호출
         int result = memberService.updateReview(myReview);
@@ -396,6 +397,7 @@ public class myPage {
 	        
 	        // 이미 등록된 이미지가 있으면 update 수행
 	        if (existingProfileImg != null) {
+	        	deleteFile(existingProfileImg.getChangeName(), session);
 	            profileImg.setPicNo(existingProfileImg.getPicNo());
 	            int updateResult = memberService.updateProfileImg(profileImg);
 	            
@@ -420,6 +422,55 @@ public class myPage {
 	        }
 	    }
 	    
+	    return "NNNNN"; // 파일이 없을 경우 반환할 메시지
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateReviewImg.mp")
+	public String uploadReviewImg(@RequestParam("reviewImg") MultipartFile upfile, HttpSession session,
+									@RequestParam("reviewNo")int reviewNo, @RequestParam("picNo") int picNo) {
+	    Member loginUser = (Member) session.getAttribute("loginUser");
+	    int userNo = loginUser.getUserNo();
+	    
+	    // 이미지 정보를 데이터베이스에서 가져오기
+//	    ProfileImg reviewImg = memberService.getReviewImgOne(picNo);
+	    ProfileImg reviewImg = memberService.getReviewImgOne(picNo);
+	    // 새로 업로드된 파일 처리
+	    if (!upfile.isEmpty()) {
+	        String changeName = saveFile(upfile, session);
+	        
+	        ProfileImg profileImg = new ProfileImg();
+	        profileImg.setOriginName(upfile.getOriginalFilename());
+	        profileImg.setChangeName(changeName);
+	        profileImg.setUserNo(userNo);
+	        profileImg.setFilePath("resources/img/user/");
+	        profileImg.setFileLevel(0);
+	        profileImg.setPicNo(picNo);
+	        
+	        // 이미 등록된 이미지가 있으면 update 수행
+	        if (reviewImg != null) {
+	        	deleteFile(reviewImg.getChangeName(), session);
+	            int updateResult = memberService.updateReviewImg(profileImg);
+	            
+	            if (updateResult > 0) {
+	            	List<ProfileImg> reviewImgs = memberService.getReivewImg(reviewNo);
+	                return "NNNNY"; // Update 성공 시 반환할 메시지
+	            } else {
+	                return "NNNNN"; // Update 실패 시 반환할 메시지
+	            }
+	        } else {
+	            // 등록된 이미지가 없으면 insert 수행
+	            int insertResult = memberService.insertProfileImg(profileImg);
+	            
+	            if (insertResult > 0) {
+	            	loginUser.setUserProfile(profileImg);
+	            	session.setAttribute("loginUser", loginUser);
+	                return "NNNNY"; // Insert 성공 시 반환할 메시지
+	            } else {
+	                return "NNNNN"; // Insert 실패 시 반환할 메시지
+	            }
+	        }
+	    }	    
 	    return "NNNNN"; // 파일이 없을 경우 반환할 메시지
 	}
 	
@@ -450,6 +501,14 @@ public class myPage {
 				}
 				
 				return changeName;
-		
+	}
+	
+	public void deleteFile(String fileName, HttpSession session) {
+	    // 삭제할 파일의 경로
+	    String filePath = session.getServletContext().getRealPath("resources/img/user/") + fileName;
+	    File file = new File(filePath);
+	    if (file.exists()) {
+	        file.delete(); // 파일 삭제
+	    }
 	}
 }

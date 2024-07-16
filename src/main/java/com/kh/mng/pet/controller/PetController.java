@@ -169,6 +169,7 @@ public class PetController {
 	            
 	            // 이미 등록된 이미지가 있으면 update 수행
 	            if (existingPetImg != null) {
+	            	deleteFile(existingPetImg.getChangeName(), session);
 	                petImg.setPicNo(existingPetImg.getPicNo());
 	                int updateResult = petService.updatePetImg(petImg);
 	                
@@ -222,9 +223,17 @@ public class PetController {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
-				
-				return changeName;
-		
+				}				
+				return changeName;		
+	}
+	
+	// 기존 사진 파일 삭제 메소드
+	public void deleteFile(String fileName, HttpSession session) {
+	    // 삭제할 파일의 경로
+	    String filePath = session.getServletContext().getRealPath("resources/img/user/") + fileName;
+	    File file = new File(filePath);
+	    if (file.exists()) {
+	        file.delete(); // 파일 삭제
+	    }
 	}
 }

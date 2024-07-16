@@ -151,4 +151,12 @@ public class MemberDao {
 	public List<ProfileImg> getBoardImg(SqlSessionTemplate sqlSession, int boardNo) {
 		return sqlSession.selectList("imgMapper.getBoardImg", boardNo);
 	}
+
+	public ProfileImg getReviewImgOne(SqlSessionTemplate sqlSession, int picNo) {
+		return sqlSession.selectOne("imgMapper.getReviewImgOne", picNo);
+	}
+
+	public int updateReviewImg(SqlSessionTemplate sqlSession, ProfileImg profileImg) {
+		return sqlSession.update("imgMapper.updateReviewImg", profileImg);
+	}
 }

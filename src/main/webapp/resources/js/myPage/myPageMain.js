@@ -10,8 +10,8 @@ function uploadProfileImage(contextPath) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function(response) {
-            if(response === "NNNNY") {
+        success: function (response) {
+            if (response === "NNNNY") {
                 alert('프로필 이미지 업로드 성공');
                 location.href = contextPath + '/myPageMain.mp';
             } else {
@@ -19,7 +19,7 @@ function uploadProfileImage(contextPath) {
                 location.href = contextPath + '/myPageMain.mp';
             }
         },
-        error: function() {
+        error: function () {
             alert('프로필 이미지 업로드 실패');
             location.href = contextPath + '/myPageMain.mp';
         }
@@ -41,7 +41,7 @@ function deleteReview(reviewNo, contextPath) {
     $.ajax({
         url: contextPath + "/deleteReview.mp",
         type: 'POST',
-        data: {reviewNo: reviewNo},
+        data: { reviewNo: reviewNo },
 
         success: function (response) {
             console.log(response);
@@ -74,14 +74,21 @@ function HideUpdateForm(element) {
     updateForm.setAttribute('hidden', true);
 }
 
-function updateReview(reviewNo, contextPath, inputId) {
+function updateReview(reviewNo, contextPath, inputId, selectId) {
     // 리뷰 콘텐츠 값을 가져옴
     var reviewContent = document.getElementById(inputId).value;
-    
+    var reviewStarCount = document.getElementById(selectId).value;
+
     // FormData 객체 생성
     var formData = new FormData();
     formData.append('reviewNo', reviewNo);
     formData.append('reviewContent', reviewContent);
+    formData.append('reviewStarCount', reviewStarCount);
+
+    console.log("FormData Entries:");
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
 
     $.ajax({
         url: contextPath + "/updateReview.mp",
@@ -103,6 +110,80 @@ function updateReview(reviewNo, contextPath, inputId) {
             console.log(error);
             alert('실패');
             // 에러 발생 시도 리다이렉트 처리
+            location.href = contextPath + '/myPageMain.mp';
+        }
+    });
+}
+
+// function uploadReviewImg(reviewNo, picNo, contextPath) {
+//     var fileInput = document.getElementById('reviewImg');
+//     var upfile = fileInput.files[0];
+//     var formData = new FormData();
+//     formData.append('reviewImg', upfile);
+//     formData.append('reviewNo', reviewNo);
+//     formData.append('picNo', picNo);
+
+//     $.ajax({
+//         url: contextPath + '/updateReviewImg.mp',
+//         type: 'POST',
+//         data: formData,
+//         processData: false,
+//         contentType: false,
+//         success: function(response) {
+//             if(response === "NNNNY") {
+//                 alert('리뷰 이미지 업로드 성공');
+//                 location.href = contextPath + '/myPageMain.mp';
+//             } else {
+//                 alert('리뷰 이미지 업로드 실패');
+//                 location.href = contextPath + '/myPageMain.mp';
+//             }
+//         },
+//         error: function() {
+//             alert('리뷰 이미지 업로드 실패');
+//             location.href = contextPath + '/myPageMain.mp';
+//         }
+//     });
+// }
+
+function openFileUploader(picNo) {
+    // 클릭 시 파일 업로드(input 태그)를 트리거합니다.
+    document.getElementById('reviewImg').click();
+
+    // 클릭된 이미지의 picNo를 저장하거나 사용할 수 있습니다.
+    console.log('Clicked image picNo:', picNo);
+
+    // 파일 업로드(input 태그)의 onchange 이벤트에서 처리할 수 있도록 picNo를 전달합니다.
+    document.getElementById('reviewImg').setAttribute('data-picNo', picNo);
+}
+
+function uploadReviewImg(reviewNo, contextPath) {
+    var fileInput = document.getElementById('reviewImg');
+    var upfile = fileInput.files[0];
+    var formData = new FormData();
+    formData.append('reviewImg', upfile);
+    formData.append('reviewNo', reviewNo);
+
+    // 파일 업로드(input 태그)에서 가져온 picNo 값을 사용합니다.
+    var picNo = fileInput.getAttribute('data-picNo');
+    formData.append('picNo', picNo);
+
+    $.ajax({
+        url: contextPath + '/updateReviewImg.mp',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response === "NNNNY") {
+                alert('리뷰 이미지 업로드 성공');
+                location.href = contextPath + '/myPageMain.mp';
+            } else {
+                alert('리뷰 이미지 업로드 실패');
+                location.href = contextPath + '/myPageMain.mp';
+            }
+        },
+        error: function() {
+            alert('리뷰 이미지 업로드 실패');
             location.href = contextPath + '/myPageMain.mp';
         }
     });

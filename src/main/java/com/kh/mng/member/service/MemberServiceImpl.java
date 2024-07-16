@@ -212,4 +212,14 @@ public class MemberServiceImpl implements MemberService {
 	public List<ProfileImg> getBoardImg(int boardNo) {
 		return memberDao.getBoardImg(sqlSession, boardNo);
 	}
+
+	@Override
+	public ProfileImg getReviewImgOne(int picNo) {
+		return memberDao.getReviewImgOne(sqlSession, picNo);
+	}
+
+	@Override
+	public int updateReviewImg(ProfileImg profileImg) {
+		return memberDao.updateReviewImg(sqlSession, profileImg);
+	}
 }
