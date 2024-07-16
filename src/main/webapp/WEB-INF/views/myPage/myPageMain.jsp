@@ -118,14 +118,18 @@
                                         <div id="right2-mid">
                                             <c:choose>
                                                 <c:when test="${empty review.reviewImg}">
-                                                    <img src="resources/img/myPage/logo.PNG" style="object-fit: contain;">
+                                                    <img src="resources/img/myPage/logo.PNG" style="object-fit: contain;" onclick="document.getElementById('reviewImg').click()">
                                                 </c:when>
                                                 <c:otherwise>
                                                     <c:forEach var="img" items="${review.reviewImg}">
-                                                        <img src="${img.filePath}${img.changeName}" style="object-fit: cover;">
+                                                        <!-- <img src="${img.filePath}${img.changeName}" style="object-fit: cover;" onclick="document.getElementById('reviewImg').click()"> -->
+                                                        <img src="${img.filePath}${img.changeName}" style="object-fit: cover; cursor: pointer;" onclick="openFileUploader('${img.picNo}')">
                                                     </c:forEach>
                                                 </c:otherwise>
                                             </c:choose>
+                                            <!-- <input type="file" id="reviewImg" style="display: none;"
+                                            onchange="uploadReviewImg('${review.reviewNo}', '<%=request.getContextPath()%>')"> -->
+                                            <input type="file" id="reviewImg" style="display: none;" onchange="uploadReviewImg('${review.reviewNo}', '<%=request.getContextPath()%>')">
                                         </div>
                                         <div id="right2-bottom">
                                             <p
@@ -134,15 +138,22 @@
                                             </p>
                                             <div id="updateForm" style="margin-top: 0px;" hidden>
                                                 <input type="text"
-                                                    style="width: 500px; height: 40px; border: 1px solid #bababa;
+                                                    style="width: 450px; height: 40px; border: 1px solid #bababa;
                                                     border-top-left-radius: 15px; border-bottom-left-radius: 15px; float: left; padding-left: 10px;"
                                                     value="${review.reviewContent}" id="updateContent-${review.reviewNo}">
                                                 <button
                                                     style="width: 40px; height: 40px; border: 1px solid #bababa; float: left;"
-                                                    onclick="updateReview('${review.reviewNo}', '<%=request.getContextPath()%>', 'updateContent-${review.reviewNo}')">확인</button>
+                                                    onclick="updateReview('${review.reviewNo}', '<%=request.getContextPath()%>', 'updateContent-${review.reviewNo}', 'updateReviewStar-${review.reviewNo}')">확인</button>
                                                 <button style="width: 40px; height: 40px; border: 1px solid #bababa; float: left;
                                                     border-top-right-radius: 15px; border-bottom-right-radius: 15px;"
                                                     onclick="HideUpdateForm(this)">취소</button>
+                                                <select style="border-radius: 15px; border: 1px solid #bababa; color: #FE8B94; height: 40px;" id="updateReviewStar-${review.reviewNo}">
+                                                    <option value="1">★</option>
+                                                    <option value="2">★★</option>
+                                                    <option value="3">★★★</option>
+                                                    <option value="4">★★★★</option>
+                                                    <option value="5">★★★★★</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>

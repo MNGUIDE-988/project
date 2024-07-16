@@ -23,6 +23,7 @@
 
 	<select id="selectPicture" resultMap="pictureResult">
 		SELECT
+		PIC_NO,
 		ORIGIN_NAME,
 		CHANGE_NAME,
 		FILE_PATH,

@@ -75,7 +75,7 @@ public interface MemberService {
 	int insertProfileImg(ProfileImg profileImg);
 
 	ProfileImg getProfileImg(int userNo);
-
+	
 	int updateProfileImg(ProfileImg profileImg);
 
 	ProfileImg getLocationImg(int locationNo);
@@ -87,4 +87,8 @@ public interface MemberService {
 	List<ProfileImg> getReivewImg(int reviewNo);
 
 	List<ProfileImg> getBoardImg(int boardNo);
+
+	ProfileImg getReviewImgOne(int picNo);
+
+	int updateReviewImg(ProfileImg profileImg);
 }
