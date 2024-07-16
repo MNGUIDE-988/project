@@ -15,11 +15,12 @@ import com.kh.mng.community.model.dto.ShorstInfo;
 import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
 import com.kh.mng.community.model.dto.ShortsPreList;
+import com.kh.mng.community.model.dto.ShortsReply;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
-import com.kh.mng.community.model.vo.ShortsReply;
+import com.kh.mng.community.model.vo.ShortsReplyVo;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
 
 
@@ -27,7 +28,7 @@ public interface CommunityService {
 	
 	int selectListCount();
 
-	ShortsReply addComment(int userNo, int videoId, String comment);
+	ShortsReplyVo addComment(int userNo, int videoId, String comment);
 
 	String getVideo(int videoId);
 
@@ -42,7 +43,7 @@ public interface CommunityService {
 
 	int getVideoReplyCount(int shortsNum);
 
-	ArrayList<ShortsReply> loadReply(int shortsNum);
+	ArrayList<ShortsReplyVo> loadReply(int shortsNum);
 
 	int selectBoardCount(BoardInfo boardInfo);
 
@@ -93,7 +94,9 @@ public interface CommunityService {
 	// 쇼츠 페이지 전체 로드
 	ArrayList<ShortsPreList> selectShortsContentList();
 	
-	// 쇼츠 컨텐츠 하나의 정보 셀렉
+	// 쇼츠 컨텐츠 하나의 정보 조회
 	ShortsContent selectShortsContent(int shortsNo);
-
+	
+	// 쇼츠 컨텐츠 하나의 댓글 정보 조회
+	ArrayList<ShortsReply> selectShortsReplyList(int shortsNo);
 }

@@ -7,20 +7,47 @@ mHtml.animate({scrollTop : 0},10);
 
 // window에서 wheel 이벤트 발생 시 적용할 함수 (스크롤 시 한 페이지 씩 이동)
 $(window).on("wheel", function(e) {
+    let videoFile;
+    let imgFile;
 
     if(mHtml.is(":animated")) return;
     if(e.originalEvent.deltaY > 0) { // 아래로 스크롤 할 때
         if(page == lastPage) return; // true라면 return을 실행해 함수 종료
+       
+        // 해당 페이지의 영상과 썸네일 찾아 영상 없애고 썸네일 출력
+        for (let wrapper of document.querySelectorAll('.shorts-wrapper')){
+            if (wrapper.dataset.page == page){
+                videoFile = wrapper.querySelector('video');
+                imgFile = wrapper.querySelector('.shorts-content>img');
+
+                videoFile.style.display = 'none';
+                imgFile.style.display = 'block';
+                videoFile.pause();
+            }
+        }
+
         page++;
+
     } else if(e.originalEvent.deltaY < 0) { // 위로 스크롤 할 때
         if(page == 1) return;
+
+        // 해당 페이지의 영상과 썸네일 찾아 영상 없애고 썸네일 출력
+        for (let wrapper of document.querySelectorAll('.shorts-wrapper')){
+            if (wrapper.dataset.page == page){
+                videoFile = wrapper.querySelector('video');
+                imgFile = wrapper.querySelector('.shorts-content>img');
+
+                videoFile.style.display = 'none';
+                imgFile.style.display = 'block';
+                videoFile.pause();
+            }
+        }
+
         page--;
     }
 
     // 이동할 다음 페이지의 위치(높이 수치) 계산
     let posTop = (page-1) * ($(".shorts-wrapper").height() + 20);
-    console.log($(".shorts-wrapper").height())
-    console.log(posTop)
     mHtml.animate({scrollTop : posTop});
 
     // 불러올 쇼츠 데이터
@@ -34,7 +61,7 @@ $(window).on("wheel", function(e) {
     selectShortsContent({shortsNo : shortsNo}, drawShortsContent);
 })
 
-
+// 동영상 ajax 성공 시 콜백 함수
 function drawShortsContent(shortsContent){
     let shortsWrapper;
     for (let wrapper of document.querySelectorAll('.shorts-wrapper')){
@@ -48,6 +75,7 @@ function drawShortsContent(shortsContent){
     let video = shortsWrapper.querySelector('.shorts-content video');
     video.style.display = "block"
     video.src = shortsContent.video.filePath + shortsContent.video.changeName;
+    video.autoplay = true;
 
     // 프로필 사진 출력
     let profile = shortsWrapper.querySelector('.shorts-info-user img');
@@ -77,26 +105,119 @@ function drawShortsContent(shortsContent){
     let shortsReply = shortsWrapper.querySelector('.shorts-reply-count>span');
     shortsReply.innerHTML = shortsContent.replyCount;
 
+    // 댓글 박스 구하기
+    let replyBoxList = document.querySelectorAll('.shorts-reply-box');
+    let replyBox;
+
+    for (let box of replyBoxList){
+        if (box.dataset.page == page){
+            replyBox = box;
+        }
+    }
+
+    // 댓글창의 댓글수 출력
+    let replyCount = replyBox.querySelector('.reply-title-count');
+    replyCount.innerHTML = shortsContent.replyCount;
 }
 
 // 댓글창 열기
 function showReplyBox(ev){
     let replyBoxList = document.querySelectorAll('.shorts-reply-box');
     let replyBox;
+    let shortsNo;
 
+    // 쇼츠 번호 구하기
+    for (let wrapper of document.querySelectorAll('.shorts-wrapper')){
+        if (wrapper.dataset.page == page){
+            shortsNo = wrapper.querySelector('input').value;
+        }
+    }
+
+    // 댓글 박스 구하기
     for (let box of replyBoxList){
         if (box.dataset.page == ev.dataset.page){
             replyBox = box;
         }
     }
 
+    // 댓글창 열고 닫기 / 열 때 ajax
     if (ev.dataset.check == "N"){
         replyBox.style.display = "block"
         ev.dataset.check = "Y"
+        selectShortsReplyList({shortsNo : shortsNo}, drawReplyPage);
     } else if (ev.dataset.check == "Y"){
         replyBox.style.display = "none"
         ev.dataset.check = "N"
     }
+}
+
+function drawReplyPage(replyList){
+    console.log(replyList)
+    let replyWrapList = document.querySelectorAll('.shorts-reply-box');
+    let replyWrap;
+    for (let box of replyWrapList){
+        if (box.dataset.page == page){
+            replyWrap = box;
+        }
+    }
+
+    
+
+    let replyBox = replyWrap.querySelector('.reply-title-count');
+    
+    for (let r of replyList){
+        let replyContent = document.createElement('div');
+        replyContent.className = 'reply-content-box';
+
+        replyBox.append(replyContent);
+
+        replyContentHTML = ``;
+
+        replyContentHTML += `<img src="`+ r.userProfile.filePath + r.userProfile.changeName +`" class="user-profile" alt="">
+                                <div class="reply-content-wrap">
+                                    <div class="reply-content-info">
+                                        <div>
+                                            <span class="reply-user">` + r.userNickname + `</span>
+                                            <span class="reply-date font-color-gray">` + r.createDate + `</span>
+                                        </div>`;
+        // 유저가 작성한 댓글일 경우 삭제하기로 바꾸기
+        
+        replyContentHTML += `<span class="reply-regist-re font-color-gray">답글 달기</span>
+                            </div>
+                            <div class="reply-content-text">` + r.replyContent +` </div>
+                        </div>`;
+                        console.log(replyContentHTML)
+                        console.log('왜!')
+        replyContent.innerHTML = replyContentHTML;
+
+        if (r.reReplyList != null){
+            for (let rr of r.reReplyList){
+                let reReplyContent = document.createElement('div');
+                reReplyContent.classList.add('reply-content-box', 're-reply');
+
+                replyBox.append(reReplyContent);
+
+                let reReplyContentHTML = ``;
+                reReplyContentHTML += `<img src="`+ rr.userProfile.filePath + rr.userProfile.changeName +`" class="user-profile" alt="">
+                                    <div class="reply-content-wrap">
+                                        <div class="reply-content-info">
+                                            <div>
+                                                <span class="reply-user">` + rr.userNickname + `</span>
+                                                <span class="reply-date font-color-gray">` + rr.createDate + `</span>
+                                            </div>`;
+
+                // 유저가 작성한 댓글일 경우 삭제하기로 바꾸기
+        
+                reReplyContentHTML += `<span class="reply-regist-re font-color-gray">답글 달기</span>
+                                    </div>
+                                    <div class="reply-content-text">` + rr.replyContent +` </div>
+                                </div>`;
+
+                reReplyContent.innerHTML = reReplyContentHTML;
+            }
+        }
+    }
+    
 }
 
 
@@ -154,22 +275,22 @@ function drawShortsPage(list){
 
                 // <div class="reply-box">
 
-                //     <div class="reply-content-box" style="border: none">
-                //         <img src="resources/img/main/dog2.jpg" class="user-profile" alt="">
-                //         <div class="reply-content-wrap">
-                //             <div class="reply-content-info">
-                //                 <div>
-                //                     <span class="reply-user">토리형</span>
-                //                     <span class="reply-date font-color-gray">2024.05.13</span>
-                //                 </div>
-                //                 <!-- 본인이 쓴 댓글일 경우 삭제하기로 변경 -->
-                //                 <span class="reply-regist-re font-color-gray">답글 달기</span>
-                //             </div>
-                //             <div class="reply-content-text">
-                //                 너무 귀여워ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
-                //             </div>
-                //         </div>
-                //     </div>
+                    // <div class="reply-content-box" style="border: none">
+                    //     <img src="resources/img/main/dog2.jpg" class="user-profile" alt="">
+                    //     <div class="reply-content-wrap">
+                    //         <div class="reply-content-info">
+                    //             <div>
+                    //                 <span class="reply-user">토리형</span>
+                    //                 <span class="reply-date font-color-gray">2024.05.13</span>
+                    //             </div>
+                    //             <!-- 본인이 쓴 댓글일 경우 삭제하기로 변경 -->
+                    //             <span class="reply-regist-re font-color-gray">답글 달기</span>
+                    //         </div>
+                    //         <div class="reply-content-text">
+                    //             너무 귀여워ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+                    //         </div>
+                    //     </div>
+                    // </div>
 
                 //     <div class="reply-content-box">
                 //         <img src="resources/img/main/dog2.jpg" class="user-profile" alt="">

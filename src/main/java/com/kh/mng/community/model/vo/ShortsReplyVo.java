@@ -13,7 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ShortsReply {
+public class ShortsReplyVo {
 	private int shortsNo;
 	private int replyNo;
 	private Date enrollDate;

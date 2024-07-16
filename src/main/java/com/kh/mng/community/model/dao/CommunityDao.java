@@ -20,13 +20,14 @@ import com.kh.mng.community.model.dto.ShorstInfo;
 import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
 import com.kh.mng.community.model.dto.ShortsPreList;
+import com.kh.mng.community.model.dto.ShortsReply;
 import com.kh.mng.community.model.dto.ShortsReplyDTO;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.BoardReplyReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
-import com.kh.mng.community.model.vo.ShortsReply;
+import com.kh.mng.community.model.vo.ShortsReplyVo;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
 
 @Repository
@@ -204,7 +205,7 @@ public class CommunityDao {
 		return sqlSession.selectOne("shortsMapper.getShortsNo",videoId);
 	}
 
-	public ArrayList<ShortsReply> loadReply(SqlSessionTemplate sqlSession, int shortsNum) {
+	public ArrayList<ShortsReplyVo> loadReply(SqlSessionTemplate sqlSession, int shortsNum) {
 	    return (ArrayList)sqlSession.selectList("shortsMapper.loadReply", shortsNum);
 	}
 
@@ -212,7 +213,7 @@ public class CommunityDao {
 		return sqlSession.selectOne("shortsMapper.getReplyNo");
 	}
 
-	public ShortsReply getRecentReply(SqlSessionTemplate sqlSession, int replyNo) {
+	public ShortsReplyVo getRecentReply(SqlSessionTemplate sqlSession, int replyNo) {
 		return sqlSession.selectOne("communityBoardMapper.getRecentReply", replyNo);
 	}
 
@@ -306,6 +307,16 @@ public class CommunityDao {
 	// 쇼츠 유저 프로필 사진 조회
 	public ProfileImg selectProfile(SqlSessionTemplate sqlSession, int userNo) {
 		return sqlSession.selectOne("imgMapper.getProfileImg", userNo);
+	}
+	
+	// 쇼츠 댓글 목록 조회
+	public ArrayList<ShortsReply> selectShortsReplyList(SqlSessionTemplate sqlSession, int shortsNo){
+		return (ArrayList)sqlSession.selectList("communityShortsMapper.selectShortsReplyList", shortsNo);
+	}
+	
+	// 쇼츠 대댓글 목록 조회
+	public ArrayList<ShortsReply> selectShortsReReplyList(SqlSessionTemplate sqlSession, int replyNo){
+		return (ArrayList)sqlSession.selectList("communityShortsMapper.selectShortsReReplyList", replyNo);
 	}
 
 }

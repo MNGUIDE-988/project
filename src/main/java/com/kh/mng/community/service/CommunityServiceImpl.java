@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.mng.common.model.vo.Attachment;
 import com.kh.mng.common.model.vo.PageInfo;
+import com.kh.mng.common.model.vo.ProfileImg;
 import com.kh.mng.community.model.dao.CommunityDao;
 import com.kh.mng.community.model.dto.BoardEnroll;
 import com.kh.mng.community.model.dto.BoardFileInfo;
@@ -22,13 +23,14 @@ import com.kh.mng.community.model.dto.ShorstInfo;
 import com.kh.mng.community.model.dto.ShortsContent;
 import com.kh.mng.community.model.dto.ShortsFileInfo;
 import com.kh.mng.community.model.dto.ShortsPreList;
+import com.kh.mng.community.model.dto.ShortsReply;
 import com.kh.mng.community.model.dto.ShortsReplyDTO;
 import com.kh.mng.community.model.vo.BoardCategory;
 import com.kh.mng.community.model.vo.BoardReply;
 import com.kh.mng.community.model.vo.BoardReplyReply;
 import com.kh.mng.community.model.vo.CommunityBoard;
 import com.kh.mng.community.model.vo.Shorts;
-import com.kh.mng.community.model.vo.ShortsReply;
+import com.kh.mng.community.model.vo.ShortsReplyVo;
 import com.kh.mng.community.model.vo.TotalShortsInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +55,7 @@ public class CommunityServiceImpl implements CommunityService{
 
 	@Override
 	@Transactional
-	public ShortsReply addComment(int userNo, int shortsNo, String comment) {
+	public ShortsReplyVo addComment(int userNo, int shortsNo, String comment) {
 		// 1. 시퀀스 가져오기
 		int replyNo = communityDao.getReplyNo(sqlSession);
 		
@@ -498,7 +500,7 @@ public class CommunityServiceImpl implements CommunityService{
 
 
 	@Override
-	public ArrayList<ShortsReply> loadReply(int shortsNum) {
+	public ArrayList<ShortsReplyVo> loadReply(int shortsNum) {
 		return communityDao.loadReply(sqlSession, shortsNum);
 	}
 
@@ -582,6 +584,34 @@ public class CommunityServiceImpl implements CommunityService{
 		shorts.setUserProfile(communityDao.selectProfile(sqlSession, shorts.getUserNo()));
 		shorts.setVideo(communityDao.selectVideo(sqlSession, shorts.getShortsNo()));
 		return shorts;
+	}
+
+
+	@Override
+	public ArrayList<ShortsReply> selectShortsReplyList(int shortsNo) {
+		ArrayList<ShortsReply> list = communityDao.selectShortsReplyList(sqlSession, shortsNo);
+		
+//		// 댓글 리스트 유저 프로필 + 대댓글 조회
+		for (ShortsReply s : list) {
+			ProfileImg img = communityDao.selectProfile(sqlSession, s.getUserNo());
+			s.setUserProfile(img);
+			
+			// 대댓글 리스트
+			ArrayList<ShortsReply> reList = communityDao.selectShortsReReplyList(sqlSession, s.getReplyNo());
+			
+			// 대댓글 리스트가 존재하는 경우
+			if (!reList.isEmpty()) {
+				// 대댓글 유저 프로필
+				for (ShortsReply rs : reList) {
+					ProfileImg reImg = communityDao.selectProfile(sqlSession, rs.getUserNo());
+					rs.setUserProfile(reImg);
+				}
+				
+				// 쇼츠 댓글 목록에 넣기
+				s.setReReplyList(reList);
+			}
+		}
+		return list;
 	}
 
 
